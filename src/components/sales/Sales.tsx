@@ -1,4 +1,10 @@
-import { useState, useContext, useEffect, ChangeEvent } from "react";
+import {
+  useState,
+  useContext,
+  useEffect,
+  ChangeEvent,
+  useCallback,
+} from "react";
 import {
   Box,
   Paper,
@@ -14,6 +20,8 @@ import SearchIcon from "@mui/icons-material/Search";
 
 import { SalesContext } from "../../context";
 import * as styles from "./styled";
+import { Data } from "../../interface";
+import { Modal } from "../modal";
 
 interface Column {
   id: "id" | "zone" | "products" | "table" | "typePayments" | "total";
@@ -49,7 +57,8 @@ const columns: readonly Column[] = [
     id: "total",
     label: "Total",
     minWidth: 100,
-    format: (value: number) => new Intl.NumberFormat("en-US").format(value),
+    format: (value: number) =>
+      `$ ${new Intl.NumberFormat("en-US").format(value)}`,
   },
 ];
 
@@ -67,13 +76,13 @@ export const Sales = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [search, setSearch] = useState("");
   const [data, setData] = useState<DataTransformed[]>([]);
+  const [detailData, setDetailData] = useState<Data[]>([]);
+  const [open, setOpen] = useState<boolean>(false);
   const [transformedSales, setTransformedSales] = useState<DataTransformed[]>(
     []
   );
 
   const sales = useContext(SalesContext);
-
-  console.log(sales);
 
   useEffect(() => {
     const transformedSales = sales.map((sale) => {
@@ -108,6 +117,13 @@ export const Sales = () => {
     }
   }, [search, transformedSales]);
 
+  const DetailSale = (id: string) => {
+    const detailSales = sales.filter((sale) => {
+      return sale.id === id;
+    });
+    setDetailData(detailSales);
+  };
+
   const normalizeText = (text: string) => {
     return text
       .normalize("NFD")
@@ -128,6 +144,10 @@ export const Sales = () => {
     setSearch(event.target.value);
   };
 
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <>
       <Box
@@ -137,7 +157,7 @@ export const Sales = () => {
           <SearchIcon />
           <styles.inputSearch
             type="text"
-            placeholder="Search..."
+            placeholder="Buscar..."
             onChange={handleSearch}
           />
         </styles.SearchContainer>
@@ -162,7 +182,17 @@ export const Sales = () => {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => {
                   return (
-                    <TableRow hover role="checkbox" tabIndex={-1}>
+                    <TableRow
+                      key={row.id}
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      sx={{ cursor: "pointer" }}
+                      onClick={() => {
+                        setOpen(true);
+                        DetailSale(row.id);
+                      }}
+                    >
                       {columns.map((column) => {
                         const value = row[column.id];
                         return (
@@ -186,6 +216,7 @@ export const Sales = () => {
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
+        <Modal open={open} onClose={handleClose} detailData={detailData} />
       </Paper>
     </>
   );

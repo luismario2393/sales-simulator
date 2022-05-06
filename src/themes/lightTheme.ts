@@ -1,6 +1,8 @@
 import { createTheme } from "@mui/material";
 import { grey, red } from "@mui/material/colors";
 
+import { MAIN_FONT_FAMILY } from "./fonts";
+
 export const lightTheme = createTheme({
   palette: {
     mode: "light",
@@ -17,6 +19,9 @@ export const lightTheme = createTheme({
     error: {
       main: red.A400,
     },
+  },
+  typography: {
+    fontFamily: MAIN_FONT_FAMILY,
   },
 
   components: {

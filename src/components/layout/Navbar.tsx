@@ -16,7 +16,7 @@ export const Navbar: FC<Props> = ({ handleDrawerOpen }) => {
         </IconButton>
         <Link to="/">
           <Typography variant="h5" sx={{ color: "white" }}>
-            Ventas trimestral
+            Ventas trimestrales
           </Typography>
         </Link>
       </Toolbar>
