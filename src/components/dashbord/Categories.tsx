@@ -1,40 +1,35 @@
-import { useContext, useCallback } from "react";
+import { useCallback, FC } from "react";
 
 import { formatPercentage } from "../../utils";
-import * as styled from "./styled";
-import { SalesContext } from "../../context";
 import { BarChart, PieChart } from "./components";
+import { Data, IDashbord } from "../../interface";
+import * as styled from "./styled";
 
-export const Categories = ({ totalSales }: { totalSales: number }) => {
-  const sales = useContext(SalesContext);
-
+export const Categories: FC<IDashbord> = ({ totalSales, data }) => {
   let dataCategories: number[] = [];
   let dataCategoriesPercentage: number[] = [];
 
-  const totalCategories = useCallback(
-    (value: string) => {
-      const products = sales.map((sale) => sale.products);
-      const categoies = products.map((product) =>
-        product.filter((p) => p.category === value)
-      );
+  const totalCategories = useCallback((value: string, data: Data[]) => {
+    const products = data.map((sale) => sale.products);
+    const categoies = products.map((product) =>
+      product.filter((p) => p.category === value)
+    );
 
-      const result = Object.values(
-        categoies.map((category) =>
-          category.reduce((acc, p) => acc + p.price * p.quantity, 0)
-        )
-      );
+    const result = Object.values(
+      categoies.map((category) =>
+        category.reduce((acc, p) => acc + p.price * p.quantity, 0)
+      )
+    );
 
-      const total = result.reduce((acc, p) => acc + p, 0);
+    const total = result.reduce((acc, p) => acc + p, 0);
 
-      return total;
-    },
-    [sales]
-  );
+    return total;
+  }, []);
 
-  const findCategories = () => {
+  const findCategories = (values: Data[]) => {
     const findElement = Object.values(
-      sales
-        .map((sale) => sale.products.map((product) => product.category))
+      values
+        .map((value) => value.products.map((product) => product.category))
         .flat()
         .filter((category, index, self) => self.indexOf(category) === index)
     );
@@ -42,13 +37,13 @@ export const Categories = ({ totalSales }: { totalSales: number }) => {
     return findElement;
   };
 
-  findCategories().map((category) =>
-    dataCategories.push(totalCategories(category))
+  findCategories(data).map((category) =>
+    dataCategories.push(totalCategories(category, data))
   );
 
-  findCategories().map((category) =>
+  findCategories(data).map((category) =>
     dataCategoriesPercentage.push(
-      formatPercentage(totalCategories(category), totalSales, 0)
+      formatPercentage(totalCategories(category, data), totalSales, 0)
     )
   );
 
@@ -60,14 +55,14 @@ export const Categories = ({ totalSales }: { totalSales: number }) => {
       <styled.MuiBox>
         <BarChart
           dataNum={dataCategories}
-          labels={findCategories()}
+          labels={findCategories(data)}
           title="Total ventas por categorias"
           labelDataSet="Ventas por categorias"
         />
 
         <PieChart
           dataNum={dataCategoriesPercentage}
-          labels={findCategories()}
+          labels={findCategories(data)}
           labelDataSet={"Porcentaje de ventas categorias"}
           title={"Porcentaje de ventas categorias"}
         />

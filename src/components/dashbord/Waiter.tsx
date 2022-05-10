@@ -1,30 +1,25 @@
-import { useContext, useCallback } from "react";
+import { useCallback, FC } from "react";
 
 import { formatPercentage } from "../../utils";
-import * as styled from "./styled";
-import { SalesContext } from "../../context";
 import { BarChart, PieChart } from "./components";
+import * as styled from "./styled";
+import { IDashbord, Data } from "../../interface";
 
-export const Waiter = ({ totalSales }: { totalSales: number }) => {
-  const sales = useContext(SalesContext);
-
+export const Waiter: FC<IDashbord> = ({ totalSales, data }) => {
   let dataWaiters: number[] = [];
   let dataWaitersPercentage: number[] = [];
 
-  const totalwaiters = useCallback(
-    (value: string) => {
-      const waiters = sales
-        .filter((sale) => sale.waiter === value)
-        .reduce((acc, w) => acc + w.total, 0);
+  const totalwaiters = useCallback((value: string, data: Data[]) => {
+    const waiters = data
+      .filter((sale) => sale.waiter === value)
+      .reduce((acc, w) => acc + w.total, 0);
 
-      return waiters;
-    },
-    [sales]
-  );
+    return waiters;
+  }, []);
 
-  const findWaiters = () => {
+  const findWaiters = (values: Data[]) => {
     const findElement = Object.values(
-      sales
+      values
         .map((sale) => sale.waiter)
         .filter((waiter, index, self) => self.indexOf(waiter) === index)
     );
@@ -32,11 +27,13 @@ export const Waiter = ({ totalSales }: { totalSales: number }) => {
     return findElement;
   };
 
-  findWaiters().map((waiter) => dataWaiters.push(totalwaiters(waiter)));
+  findWaiters(data).map((waiter) =>
+    dataWaiters.push(totalwaiters(waiter, data))
+  );
 
-  findWaiters().map((waiter) =>
+  findWaiters(data).map((waiter) =>
     dataWaitersPercentage.push(
-      formatPercentage(totalwaiters(waiter), totalSales, 0)
+      formatPercentage(totalwaiters(waiter, data), totalSales, 0)
     )
   );
 
@@ -49,13 +46,13 @@ export const Waiter = ({ totalSales }: { totalSales: number }) => {
         {" "}
         <BarChart
           dataNum={dataWaiters}
-          labels={findWaiters()}
+          labels={findWaiters(data)}
           title="Total ventas por meseros"
           labelDataSet="Ventas por meseros"
         />
         <PieChart
           dataNum={dataWaitersPercentage}
-          labels={findWaiters()}
+          labels={findWaiters(data)}
           labelDataSet={"Porcentaje de ventas meseros"}
           title={"Porcentaje de ventas meseros"}
         />

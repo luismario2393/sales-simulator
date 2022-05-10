@@ -1,30 +1,25 @@
-import { useContext, useCallback } from "react";
+import { FC, useCallback } from "react";
 
 import { formatPercentage } from "../../utils";
-import * as styled from "./styled";
-import { SalesContext } from "../../context";
 import { BarChart, PieChart } from "./components";
+import * as styled from "./styled";
+import { IDashbord, Data } from "../../interface";
 
-export const Zone = ({ totalSales }: { totalSales: number }) => {
-  const sales = useContext(SalesContext);
-
+export const Zone: FC<IDashbord> = ({ totalSales, data }) => {
   let dataZone: number[] = [];
   let dataZonePercentage: number[] = [];
 
-  const totalZone = useCallback(
-    (value: string) => {
-      const zone = sales
-        .filter((sale) => sale.zone === value)
-        .reduce((acc, z) => acc + z.total, 0);
+  const totalZone = useCallback((value: string, data: Data[]) => {
+    const zone = data
+      .filter((sale) => sale.zone === value)
+      .reduce((acc, z) => acc + z.total, 0);
 
-      return zone;
-    },
-    [sales]
-  );
+    return zone;
+  }, []);
 
-  const findZone = () => {
+  const findZone = (values: Data[]) => {
     const findElement = Object.values(
-      sales
+      values
         .map((sale) => sale.zone)
         .filter((zone, index, self) => self.indexOf(zone) === index)
     );
@@ -32,10 +27,12 @@ export const Zone = ({ totalSales }: { totalSales: number }) => {
     return findElement;
   };
 
-  findZone().map((zone) => dataZone.push(totalZone(zone)));
+  findZone(data).map((zone) => dataZone.push(totalZone(zone, data)));
 
-  findZone().map((zone) =>
-    dataZonePercentage.push(formatPercentage(totalZone(zone), totalSales, 0))
+  findZone(data).map((zone) =>
+    dataZonePercentage.push(
+      formatPercentage(totalZone(zone, data), totalSales, 0)
+    )
   );
 
   return (
@@ -47,14 +44,14 @@ export const Zone = ({ totalSales }: { totalSales: number }) => {
         {" "}
         <BarChart
           dataNum={dataZone}
-          labels={findZone()}
+          labels={findZone(data)}
           title="Total ventas por productos"
           labelDataSet="Ventas por productos"
           isGreen
         />
         <PieChart
           dataNum={dataZonePercentage}
-          labels={findZone()}
+          labels={findZone(data)}
           labelDataSet={"Porcentaje de ventas productos"}
           title={"Porcentaje de ventas productos"}
           isGreen

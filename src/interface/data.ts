@@ -23,3 +23,8 @@ export interface Payment {
   amount: number;
   type: string;
 }
+
+export interface IDashbord {
+  totalSales: number;
+  data: Data[];
+}

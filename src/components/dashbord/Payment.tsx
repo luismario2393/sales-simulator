@@ -1,40 +1,35 @@
-import { useContext, useCallback } from "react";
+import { useCallback, FC } from "react";
 
 import { formatPercentage } from "../../utils";
-import * as styled from "./styled";
-import { SalesContext } from "../../context";
 import { BarChart, PieChart } from "./components";
+import * as styled from "./styled";
+import { IDashbord, Data } from "../../interface";
 
-export const Payment = ({ totalSales }: { totalSales: number }) => {
-  const sales = useContext(SalesContext);
-
+export const Payment: FC<IDashbord> = ({ totalSales, data }) => {
   let dataPayments: number[] = [];
   let dataPaymentsPercentage: number[] = [];
 
-  const totalPayments = useCallback(
-    (value: string) => {
-      const payments = sales.map((sale) => sale.payments);
-      const paymentsName = payments.map((payment) =>
-        payment.filter((p) => p.type === value)
-      );
+  const totalPayments = useCallback((value: string, data: Data[]) => {
+    const payments = data.map((sale) => sale.payments);
+    const paymentsName = payments.map((payment) =>
+      payment.filter((p) => p.type === value)
+    );
 
-      const result = Object.values(
-        paymentsName.map((payment) =>
-          payment.reduce((acc, p) => acc + p.amount, 0)
-        )
-      );
+    const result = Object.values(
+      paymentsName.map((payment) =>
+        payment.reduce((acc, p) => acc + p.amount, 0)
+      )
+    );
 
-      const total = result.reduce((acc, p) => acc + p, 0);
+    const total = result.reduce((acc, p) => acc + p, 0);
 
-      return total;
-    },
-    [sales]
-  );
+    return total;
+  }, []);
 
-  const findPayments = () => {
+  const findPayments = (values: Data[]) => {
     const findElement = Object.values(
-      sales
-        .map((sale) => sale.payments.map(({ type }) => type))
+      values
+        .map((value) => value.payments.map(({ type }) => type))
         .flat()
         .filter((type, index, self) => self.indexOf(type) === index)
     );
@@ -42,11 +37,13 @@ export const Payment = ({ totalSales }: { totalSales: number }) => {
     return findElement;
   };
 
-  findPayments().map((payment) => dataPayments.push(totalPayments(payment)));
+  findPayments(data).map((payment) =>
+    dataPayments.push(totalPayments(payment, data))
+  );
 
-  findPayments().map((payment) =>
+  findPayments(data).map((payment) =>
     dataPaymentsPercentage.push(
-      formatPercentage(totalPayments(payment), totalSales, 0)
+      formatPercentage(totalPayments(payment, data), totalSales, 0)
     )
   );
 
@@ -58,14 +55,14 @@ export const Payment = ({ totalSales }: { totalSales: number }) => {
       <styled.MuiBox>
         <BarChart
           dataNum={dataPayments}
-          labels={findPayments()}
+          labels={findPayments(data)}
           title="Total ventas por metodo de pago"
           labelDataSet="Ventas por metodo de pago"
         />
 
         <PieChart
           dataNum={dataPaymentsPercentage}
-          labels={findPayments()}
+          labels={findPayments(data)}
           labelDataSet={"Porcentaje de ventas por  metodo de pago"}
           title={"Porcentaje de ventas por  metodo de pago"}
         />
