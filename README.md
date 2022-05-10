@@ -2,6 +2,24 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Clone the repository
+
+In your terminal, run:
+
+### `git clone https://github.com/luismario2393/sales-simulator.git`
+
+## go to the project directory
+
+In your terminal, run:
+
+### `cd sales-simulator`
+
+## Install
+
+In the project install directory, run:
+
+### `npm install`
+
 ## Available Scripts
 
 In the project directory, you can run:
