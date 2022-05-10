@@ -34,7 +34,7 @@ export const lightTheme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: "4px",
+          borderRadius: "8px",
           padding: "8px 16px",
           fontSize: "14px",
           fontWeight: "bold",

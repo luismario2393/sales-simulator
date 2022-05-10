@@ -1,10 +1,4 @@
-import {
-  useState,
-  useContext,
-  useEffect,
-  ChangeEvent,
-  useCallback,
-} from "react";
+import { useState, useContext, useEffect, ChangeEvent } from "react";
 import {
   Box,
   Paper,
@@ -22,6 +16,7 @@ import { SalesContext } from "../../context";
 import * as styles from "./styled";
 import { Data } from "../../interface";
 import { Modal } from "../modal";
+import { changeFormat } from "../../utils";
 
 interface Column {
   id: "id" | "zone" | "products" | "table" | "typePayments" | "total";
@@ -57,8 +52,7 @@ const columns: readonly Column[] = [
     id: "total",
     label: "Total",
     minWidth: 100,
-    format: (value: number) =>
-      `$ ${new Intl.NumberFormat("en-US").format(value)}`,
+    format: (value: number) => `$ ${changeFormat(value)}`,
   },
 ];
 

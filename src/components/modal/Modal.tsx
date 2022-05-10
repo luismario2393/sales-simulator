@@ -6,11 +6,11 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Divider,
   Typography,
 } from "@mui/material";
 import { Data } from "../../interface";
 import { TimeDetails } from "./Timer";
+import { changeFormat } from "../../utils";
 
 export interface Props {
   open: boolean;
@@ -22,8 +22,6 @@ export const Modal: FC<Props> = ({ onClose, open, detailData }) => {
   const handleCancel = () => {
     onClose();
   };
-
-  console.log(detailData);
 
   return (
     <Dialog
@@ -132,10 +130,10 @@ export const Modal: FC<Props> = ({ onClose, open, detailData }) => {
                       {quantity}
                     </Typography>
                     <Typography variant="caption">
-                      $ {new Intl.NumberFormat("en-US").format(price)}
+                      $ {changeFormat(price)}
                     </Typography>
                     <Typography variant="caption" sx={{ fontWeight: "bold" }}>
-                      $ {new Intl.NumberFormat("en-US").format(subtotal)}
+                      $ {changeFormat(subtotal)}
                     </Typography>
                   </Box>
                 );
@@ -147,13 +145,13 @@ export const Modal: FC<Props> = ({ onClose, open, detailData }) => {
                 <Box key={index}>
                   <Typography variant="caption">
                     <span style={{ fontWeight: "bold" }}>{type} : </span> ${" "}
-                    {new Intl.NumberFormat("en-US").format(amount)}
+                    {changeFormat(amount)}
                   </Typography>
                 </Box>
               ))}
               <Typography variant="body1">
                 <span style={{ fontWeight: "bold" }}>Total de la venta: </span>{" "}
-                $ {new Intl.NumberFormat("en-US").format(total)}
+                $ {changeFormat(total)}
               </Typography>
             </Box>
           )
