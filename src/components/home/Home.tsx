@@ -1,4 +1,4 @@
-import { Button, Typography, useTheme } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import totalSales from "../../assets/images/total-sales.png";
 import * as styled from "./styled";
