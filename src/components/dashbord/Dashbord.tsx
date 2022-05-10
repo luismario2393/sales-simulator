@@ -41,8 +41,6 @@ export const Dashbord = () => {
     return parameter;
   };
 
-  console.log(options());
-
   return (
     <>
       <Typography
